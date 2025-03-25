@@ -1,8 +1,8 @@
 import jwt
 import os
 import time
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Query, HTTPException, Depends
-from fastapi.security import OAuth2PasswordBearer
+import requests
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Query, HTTPException
 from pydantic import BaseModel
 from typing import Dict, List
 from dotenv import load_dotenv
@@ -16,7 +16,6 @@ REFRESH_TOKEN_EXPIRE_SECONDS = 86400  # 1 jour
 
 app = FastAPI()
 rooms: Dict[str, List[WebSocket]] = {}
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 fake_refresh_tokens = {}  # Stockage temporaire des refresh tokens (remplacez par une DB en prod)
 
 class TokenSchema(BaseModel):
@@ -45,29 +44,36 @@ def create_refresh_token(user_id: int):
 def verify_jwt(token: str):
     """Vérifie et décode le JWT"""
     if not token:
-        return None
+        return None, "missing_token"
+    
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
-        return payload["user_id"]
+        return payload["user_id"], None
     except jwt.ExpiredSignatureError:
-        return None
+        return None, "token_expired"
     except jwt.InvalidTokenError:
-        return None
+        return None, "invalid_token"
 
-@app.post("/refresh")
-async def refresh_token(refresh_token: str):
+@app.post("/refresh-websocket-token/")
+async def refresh_websocket_token(refresh_token: str):
     """Renvoie un nouveau access_token si le refresh_token est valide"""
-    user_id = verify_jwt(refresh_token)
+    user_id, _ = verify_jwt(refresh_token)
     if not user_id or fake_refresh_tokens.get(user_id) != refresh_token:
-        raise HTTPException(status_code=401, detail="Token invalide ou expiré")
+        raise HTTPException(status_code=401, detail="Refresh token invalide ou expiré")
+    
     new_access_token = create_access_token(user_id)
     return {"access_token": new_access_token, "token_type": "bearer"}
 
 @app.websocket("/ws/{room_id}")
 async def websocket_endpoint(websocket: WebSocket, room_id: str, token: str = Query(None)):
-    """WebSocket avec gestion des salles"""
-    user_id = verify_jwt(token)
-    if not user_id:
+    """WebSocket avec gestion des salles et refresh token"""
+    user_id, error = verify_jwt(token)
+
+    if error == "token_expired":
+        await websocket.send_json({"error": "token_expired", "message": "Votre session a expiré. Rafraîchissez le token."})
+        await websocket.close(code=1008)
+        return
+    elif error:
         await websocket.close(code=1008)
         return
 

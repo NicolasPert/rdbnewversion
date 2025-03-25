@@ -50,4 +50,21 @@ class Favorite(models.Model):
     
     class Meta:
         unique_together = ('user', 'character')
+        
+        
+#----------------------------
+# Partie Article 
+#----------------------------
+
+class Article(models.Model):
+    title = models.CharField(max_length=255)
+    content = models.TextField()
+    author = models.ForeignKey('auth.User', on_delete=models.CASCADE)  # L'auteur de l'article (admin)
+    published_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_published = models.BooleanField(default=False)  # Un article peut être brouillon avant d'être publié
+    image = models.ImageField(upload_to='articles/', null=True, blank=True)  # Ajout de l'image
+
+    def __str__(self):
+        return self.title
 

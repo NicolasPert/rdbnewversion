@@ -16,13 +16,8 @@ from datetime import timedelta
 from dotenv import load_dotenv
 
 load_dotenv()
-print(f"🔹 SECRET_KEY chargée: {os.getenv('SECRET_KEY')}")
 
 SECRET_KEY = os.getenv("SECRET_KEY")
-
-# Vérifie si SECRET_KEY a bien été chargé
-if not SECRET_KEY:
-    raise ValueError("❌ SECRET_KEY est introuvable dans .env ! Vérifie que le fichier est bien présent.")
 
 ALGORITHM = "HS256"
 
@@ -52,6 +47,7 @@ INSTALLED_APPS = [
     'core',
     'corsheaders',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
 ]
 
 MIDDLEWARE = [
@@ -73,7 +69,7 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
-    "ROTATE_REFRESH_TOKENS": False,
+    "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
     'SIGNING_KEY': SECRET_KEY,
     "ALGORITHM": ALGORITHM,
