@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import Picture, Color, Movie, Universe, Character, Favorite
+from .models import Picture, Color, Movie, Universe, Character, Favorite, Article
 
 User = get_user_model()
 
@@ -38,3 +38,12 @@ class FavoriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Favorite
         fields = '__all__'
+        
+        
+
+class ArticleSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField(use_url=True)  # Permet d'inclure l'URL de l'image
+
+    class Meta:
+        model = Article
+        fields = ['id', 'title', 'content', 'author', 'published_at', 'updated_at', 'is_published', 'image']
