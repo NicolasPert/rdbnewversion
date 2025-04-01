@@ -1,15 +1,15 @@
 import { Component } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-header',
-  imports: [RouterLink, RouterLinkActive],
-  template: `
-    <nav>
-  <a routerLink="/" routerLinkActive="active">Accueil</a>
-  <a routerLink="/characters" routerLinkActive="active">Personnages</a>
-  <a routerLink="/articles" routerLinkActive="active">Articles</a>
-</nav>`,
+  imports: [RouterLink],
+  template: ` <nav>
+    <a routerLink="/">Accueil</a>
+    <a routerLink="/characters">Personnages</a>
+    <a routerLink="/articles">Articles</a>
+    <a routerLink="/login">Connexion</a>
+  </nav>`,
   styles: [
     `
       nav {
@@ -20,7 +20,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 
       a {
         text-decoration: none;
-        color: black;
+        color: #0ceaea;
         padding: 10px;
         transition: color 0.3s;
       }
