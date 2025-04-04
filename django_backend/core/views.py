@@ -14,6 +14,24 @@ from backend.auth import create_jwt
 
 
 @api_view(["POST"])
+def register_view(request):
+    username = request.data.get("username")
+    email = request.data.get("email")
+    password = request.data.get("password")
+
+    if User.objects.filter(username=username).exists():
+        return Response({"error": "Ce nom d'utilisateur est déjà pris."}, status=status.HTTP_400_BAD_REQUEST)
+
+    if User.objects.filter(email=email).exists():
+        return Response({"error": "Cet email est déjà utilisé."}, status=status.HTTP_400_BAD_REQUEST)
+
+    user = User.objects.create_user(username=username, email=email, password=password)
+    user.save()
+
+    token = create_jwt(user)  # Génère un token JWT après l'inscription
+    return Response({"message": "Compte créé avec succès", "token": token}, status=status.HTTP_201_CREATED)
+
+@api_view(["POST"])
 def login_view(request):
     username = request.data.get("username")
     password = request.data.get("password")

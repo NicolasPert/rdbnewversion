@@ -27,15 +27,27 @@ class Picture(models.Model):
     size = models.IntegerField()
     description = models.CharField(max_length=255)
     mimetype = models.CharField(max_length=255)
+    
+    def __str__(self):
+        return self.name
 
 class Color(models.Model):
     name = models.CharField(max_length=255, unique=True)
+    
+    def __str__(self):
+        return self.name
 
 class Movie(models.Model):
     name = models.CharField(max_length=255, unique=True)
+    
+    def __str__(self):
+        return self.name
 
 class Universe(models.Model):
     name = models.CharField(max_length=255, unique=True)
+    
+    def __str__(self):
+        return self.name
 
 class Character(models.Model):
     name = models.CharField(max_length=255)
@@ -43,6 +55,9 @@ class Character(models.Model):
     colors = models.ManyToManyField(Color, related_name="characters")
     movies = models.ManyToManyField(Movie, related_name="characters")
     universes = models.ManyToManyField(Universe, related_name="characters")
+    
+    def __str__(self):
+        return self.name, self.picture.name, self.colors.all(), self.movies.all(), self.universes.all()
 
 class Favorite(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="favorites")

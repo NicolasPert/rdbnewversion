@@ -1,5 +1,7 @@
 <app-header></app-header>
 
 <router-outlet></router-outlet>
-<app-chat-widget></app-chat-widget>
+@if (isConnected) {
+  <app-chat-widget />
+}
 <app-footer></app-footer>

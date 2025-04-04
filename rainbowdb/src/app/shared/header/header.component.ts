@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterLink} from '@angular/router';
+import { AuthService } from '../../shared/services/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -8,7 +9,13 @@ import { RouterLink} from '@angular/router';
     <a routerLink="/">Accueil</a>
     <a routerLink="/characters">Personnages</a>
     <a routerLink="/articles">Articles</a>
+
+    @if (authService.isLoggedIn()) {
+    <a (click)="authService.logout()">Déconnexion</a>
+    } @else {
     <a routerLink="/login">Connexion</a>
+    }
+    
   </nav>`,
   styles: [
     `
@@ -36,4 +43,11 @@ import { RouterLink} from '@angular/router';
     `,
   ],
 })
-export class HeaderComponent {}
+export class HeaderComponent {
+
+  constructor(public authService: AuthService) {}
+
+  logout() {
+    this.authService.logout();
+  }
+}
