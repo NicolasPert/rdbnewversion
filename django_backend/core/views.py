@@ -1,17 +1,23 @@
 from rest_framework import viewsets
-from rest_framework.permissions import IsAdminUser, SAFE_METHODS, BasePermission, IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import  SAFE_METHODS, BasePermission, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
-from .models import User, Picture, Color, Movie, Universe, Character, Favorite
+from .models import Picture, Color, Movie, Universe, Character, Favorite
 from .serializers import (
     UserSerializer, PictureSerializer, ColorSerializer, 
     MovieSerializer, UniverseSerializer, CharacterSerializer, 
     FavoriteSerializer
 )
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, get_user_model
 from backend.auth import create_jwt 
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
+import logging
 
+User = get_user_model()
+
+logger = logging.getLogger(__name__)
 
 @api_view(["POST"])
 def register_view(request):
@@ -19,28 +25,42 @@ def register_view(request):
     email = request.data.get("email")
     password = request.data.get("password")
 
+    # Log to see the incoming data
+    logger.info(f"Creating user: {username}, {email}")
+
     if User.objects.filter(username=username).exists():
+        logger.warning(f"Username {username} already taken.")
         return Response({"error": "Ce nom d'utilisateur est déjà pris."}, status=status.HTTP_400_BAD_REQUEST)
 
     if User.objects.filter(email=email).exists():
+        logger.warning(f"Email {email} already used.")
         return Response({"error": "Cet email est déjà utilisé."}, status=status.HTTP_400_BAD_REQUEST)
 
+    # Create user and log
     user = User.objects.create_user(username=username, email=email, password=password)
     user.save()
+    logger.info(f"User {username} created successfully.")
 
     token = create_jwt(user)  # Génère un token JWT après l'inscription
     return Response({"message": "Compte créé avec succès", "token": token}, status=status.HTTP_201_CREATED)
 
-@api_view(["POST"])
-def login_view(request):
-    username = request.data.get("username")
-    password = request.data.get("password")
 
-    user = authenticate(username=username, password=password)
-    if user:
-        token = create_jwt(user)
-        return Response({"token": token})
-    return Response({"error": "Invalid credentials"}, status=400)
+class LoginView(APIView):
+    def post(self, request):
+        username = request.data.get('username')
+        password = request.data.get('password')
+
+        user = authenticate(username=username, password=password)
+        if user is None:
+            return Response({"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
+
+        refresh = RefreshToken.for_user(user)
+        access_token = refresh.access_token
+
+        return Response({
+            "refresh": str(refresh),
+            "access": str(access_token)
+        })
 
 class IsAdminOrReadOnly(BasePermission):
     """

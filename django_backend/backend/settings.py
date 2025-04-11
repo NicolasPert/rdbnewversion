@@ -65,6 +65,9 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:4200',  # Origine de ton frontend Angular
 ]
 
+AUTH_USER_MODEL = 'auth.User'
+
+
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -79,19 +82,6 @@ SIMPLE_JWT = {
     "BLACKLIST_AFTER_ROTATION": True,
     'SIGNING_KEY': SECRET_KEY,
     "ALGORITHM": ALGORITHM,
-}
-
-
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'rdbnewversion',
-        'USER': 'postgres',
-        'PASSWORD': os.getenv('DB_PASSWORD', ''),
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
 }
 
 
@@ -121,8 +111,12 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'rdbnewversion',
+        'USER': 'postgres',
+        'PASSWORD': os.getenv('DB_PASSWORD', ''),
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 

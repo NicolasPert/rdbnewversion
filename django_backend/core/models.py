@@ -3,23 +3,6 @@ from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 
 # ==============================
-# Utilisateurs
-# ==============================
-class User(AbstractUser):
-    groups = models.ManyToManyField(
-        "auth.Group",
-        related_name="custom_user_set",
-        blank=True,
-        help_text="The groups this user belongs to.",
-    )
-    user_permissions = models.ManyToManyField(
-        "auth.Permission",
-        related_name="custom_user_permissions",
-        blank=True,
-        help_text="Specific permissions for this user.",
-    )
-
-# ==============================
 # Modèles liés aux personnages
 # ==============================
 class Picture(models.Model):
@@ -74,7 +57,8 @@ class Favorite(models.Model):
 class Article(models.Model):
     title = models.CharField(max_length=255)
     content = models.TextField()
-    author = models.ForeignKey('auth.User', on_delete=models.CASCADE)  # L'auteur de l'article (admin)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+  # L'auteur de l'article (admin)
     published_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_published = models.BooleanField(default=False)  # Un article peut être brouillon avant d'être publié

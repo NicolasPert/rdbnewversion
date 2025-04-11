@@ -3,7 +3,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from core.views import (
     UserViewSet, PictureViewSet, ColorViewSet, 
-    MovieViewSet, UniverseViewSet, CharacterViewSet, FavoriteViewSet, login_view, register_view)
+    MovieViewSet, UniverseViewSet, CharacterViewSet, FavoriteViewSet, LoginView, register_view)
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 
@@ -23,6 +23,6 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('api/auth/login/', login_view, name='login'),
+    path('api/auth/login/', LoginView.as_view(), name='login'),
     path("api/auth/register/", register_view, name="register"),
 ]

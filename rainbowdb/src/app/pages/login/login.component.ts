@@ -10,26 +10,69 @@ import { Router, RouterLink } from '@angular/router';
   standalone: true,
   imports: [ReactiveFormsModule, CommonModule, RouterLink],
   template: `
-    <form (ngSubmit)="onSubmit()" [formGroup]="loginForm">
-      <label>Nom</label>
-      <input type="text" formControlName="username" required />
+    <div
+      class="flex justify-center items-center min-h-screen bg-gradient-to-b from-blue-100 to-white"
+    >
+      <div
+        class="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 border-t-4 border-[#005AA7] animate-fade-in"
+      >
+        <h2 class="text-2xl font-bold text-center text-[#005AA7] mb-6">
+          Connexion
+        </h2>
 
-      <label>Mot de passe</label>
-      <input type="password" formControlName="password" required />
+        <form
+          [formGroup]="loginForm"
+          (ngSubmit)="onSubmit()"
+          class="flex flex-col gap-4"
+        >
+          <div>
+            <label class="block text-gray-700 font-medium mb-1">Nom</label>
+            <input
+              type="text"
+              formControlName="username"
+              class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#005AA7]"
+              required
+            />
+          </div>
 
-      <button type="submit" [disabled]="loginForm.invalid">Se connecter</button>
+          <div>
+            <label class="block text-gray-700 font-medium mb-1"
+              >Mot de passe</label
+            >
+            <input
+              type="password"
+              formControlName="password"
+              class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#005AA7]"
+              required
+            />
+          </div>
 
-      <p>vous n'avez pas de compte ? <a routerLink="/register">Inscription</a></p>
-    </form>
+          <button
+            type="submit"
+            [disabled]="loginForm.invalid"
+            class="mt-4 bg-[#005AA7] text-white py-2 rounded-lg hover:bg-[#0071c1] transition disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Se connecter
+          </button>
+
+          <p class="text-sm text-center mt-4">
+            Vous n'avez pas de compte ?
+            <a routerLink="/register" class="text-[#0ceaea] hover:underline"
+              >Inscription</a
+            >
+          </p>
+        </form>
+      </div>
+    </div>
   `,
   styles: [
     `
-      a {
-        text-decoration: none;
-        color: #0ceaea;
-        padding: 10px;
-        transition: color 0.3s;
+      h2, button {
+        font-family: 'Waltograph', sans-serif;
+        font-size: 2rem;
       }
+
+
     `,
   ],
 })
@@ -51,7 +94,7 @@ export class LoginComponent {
   ngOnInit(): void {}
 
   onSubmit(): void {
-    // console.log(this.loginForm.value);
+    console.log("données envoyés", this.loginForm.value);
     this.authService.login(this.loginForm.value).subscribe(
       (data: any) => {
         this.router.navigate(['/characters']); // Redirection après connexion réussie

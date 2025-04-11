@@ -14,11 +14,12 @@ export class AuthService {
     username: string;
     email: string;
     password: string;
-  }): Observable<any> {
+  }): Observable<Object> {
+    console.log("Données envoyées à l'API : ", data);
     return this.http.post(`${this.apiUrl}/register/`, data);
   }
 
-  login(credentials: { username: string; password: string }): Observable<any> {
+  login(credentials: { username: string; password: string }): Observable<Object> {
     return this.http
       .post<{ token: string }>(`${this.apiUrl}/login/`, credentials)
       .pipe(tap((res) => localStorage.setItem('auth_token', res.token)));
