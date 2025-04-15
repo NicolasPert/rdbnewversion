@@ -2,11 +2,13 @@ import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../shared/services/auth.service';
 
+
 @Component({
   selector: 'app-header',
   standalone: true,
   imports: [RouterLink],
   template: `
+    <!-- Navbar du haut -->
     <nav
       class="flex justify-between items-center sticky top-0 z-50 w-full px-6 py-4 bg-gradient-to-r from-blue-300 via-pink-300 to-purple-300 shadow-lg shadow-purple-500/30 text-white"
     >
@@ -16,10 +18,9 @@ import { AuthService } from '../../shared/services/auth.service';
           alt="Logo Disney"
           class="w-48 h-auto"
         />
-
-        <a routerLink="/" class="hover:text-yellow-200 transition taille"
-          >RainbowDB</a
-        >
+        <a routerLink="/" class="hover:text-yellow-200 transition taille">
+          RainbowDB
+        </a>
       </div>
 
       <div class="flex gap-6 items-center text-lg">
@@ -35,11 +36,6 @@ import { AuthService } from '../../shared/services/auth.service';
         >
 
         @if (authService.isLoggedIn()) {
-        <a
-          routerLink="/chatwidget"
-          class="hover:scale-105 hover:text-yellow-200 transition duration-300"
-          >Chat</a
-        >
         <button
           (click)="logout()"
           class="hover:scale-105 hover:text-yellow-200 transition duration-300"
@@ -55,6 +51,7 @@ import { AuthService } from '../../shared/services/auth.service';
         }
       </div>
     </nav>
+
   `,
   styles: [
     `

@@ -3,11 +3,11 @@ from rest_framework.permissions import  SAFE_METHODS, BasePermission, IsAuthenti
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
-from .models import Picture, Color, Movie, Universe, Character, Favorite
+from .models import Picture, Color, Movie, Universe, Character, Favorite, Article
 from .serializers import (
     UserSerializer, PictureSerializer, ColorSerializer, 
     MovieSerializer, UniverseSerializer, CharacterSerializer, 
-    FavoriteSerializer
+    FavoriteSerializer, ArticleSerializer
 )
 from django.contrib.auth import authenticate, get_user_model
 from backend.auth import create_jwt 
@@ -114,3 +114,11 @@ class FavoriteViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         """Assigne automatiquement l'utilisateur connecté lors de la création"""
         serializer.save(user=self.request.user)
+
+class ArticleViewSet(viewsets.ModelViewSet):
+    queryset = Article.objects.all()
+    serializer_class = ArticleSerializer
+    permission_classes = [IsAdminOrReadOnly]  # Seuls les admins peuvent créer, mettre à jour ou supprimer des articles
+
+def get_queryset(self):
+    return Article.objects.all()
