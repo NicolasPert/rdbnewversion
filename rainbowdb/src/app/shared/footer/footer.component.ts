@@ -12,7 +12,7 @@ import { RouterLink } from '@angular/router';
       <nav class="flex gap-6">
         <a routerLink="/mentions" class="hover:underline">Mentions légales</a>
         <a routerLink="/contact" class="hover:underline">Contact</a>
-        <a routerLink="/about" class="hover:underline">À propos</a>
+        <a routerLink="/about" class="hover:underline">A propos</a>
       </nav>
     </footer>
   `,
