@@ -35,7 +35,7 @@ import { AuthService } from '../../shared/services/auth.service';
           >Articles</a
         >
 
-        @if (authService.isLoggedIn()) {
+        @if (authService.isLoggedInSignal()) {
         <button
           (click)="logout()"
           class="hover:scale-105 hover:text-yellow-200 transition duration-300"

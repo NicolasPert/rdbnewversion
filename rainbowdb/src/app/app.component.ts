@@ -26,7 +26,7 @@ export class AppComponent {
   constructor(private authService: AuthService) {}
 
   ngOnInit(): void {
-    this.isConnected = this.authService.isLoggedIn();
+    this.isConnected = this.authService.isLoggedInSignal();
   }
   title = 'rainbowdb';
 }

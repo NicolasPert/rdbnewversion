@@ -57,10 +57,17 @@ class LoginView(APIView):
         refresh = RefreshToken.for_user(user)
         access_token = refresh.access_token
 
+        # Ajoute les informations utilisateur à la réponse
         return Response({
             "refresh": str(refresh),
-            "access": str(access_token)
+            "access": str(access_token),
+            "user": {
+                "id": user.id,  # Ajoute l'ID de l'utilisateur
+                "username": user.username,  # Ajoute le nom d'utilisateur
+                "email": user.email,  # Ajoute l'email de l'utilisateur
+            }
         })
+
 
 class IsAdminOrReadOnly(BasePermission):
     """
@@ -78,9 +85,9 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        if self.request.user.is_staff:
+        
             return User.objects.all()  # Un admin peut voir tous les utilisateurs
-        return User.objects.filter(id=self.request.user.id)  # Un utilisateur normal ne voit que son propre profil
+          # Un utilisateur normal ne voit que son propre profil
 
 class PictureViewSet(viewsets.ModelViewSet):
     queryset = Picture.objects.all()
@@ -122,3 +129,19 @@ class ArticleViewSet(viewsets.ModelViewSet):
 
 def get_queryset(self):
     return Article.objects.all()
+
+
+from rest_framework.generics import RetrieveAPIView
+
+class UserDetailAPIView(RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    lookup_field = "id"
+    permission_classes = [IsAuthenticated]
+
+class CurrentUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)

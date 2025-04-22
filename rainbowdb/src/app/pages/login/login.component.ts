@@ -94,7 +94,7 @@ export class LoginComponent {
   ngOnInit(): void {}
 
   onSubmit(): void {
-    console.log("données envoyés", this.loginForm.value);
+    // console.log("données envoyés", this.loginForm.value);
     this.authService.login(this.loginForm.value).subscribe(
       (data: any) => {
         this.router.navigate(['/characters']); // Redirection après connexion réussie
