@@ -3,7 +3,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from core.views import (
     UserViewSet, PictureViewSet, ColorViewSet, 
-    MovieViewSet, UniverseViewSet, CharacterViewSet, FavoriteViewSet, LoginView, register_view, ArticleViewSet, UserDetailAPIView, CurrentUserView)
+    MovieViewSet, UniversViewSet, CharacterViewSet, FavoriteViewSet, LoginView, register_view, ArticleViewSet, UserDetailAPIView, CurrentUserView)
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from django.conf import settings
 from django.conf.urls.static import static
@@ -16,7 +16,7 @@ router.register(r'users', UserViewSet)
 router.register(r'pictures', PictureViewSet, basename="picture")
 router.register(r'colors', ColorViewSet, basename="color")
 router.register(r'movies', MovieViewSet, basename="movie")
-router.register(r'universes', UniverseViewSet, basename="universe")
+router.register(r'univers', UniversViewSet, basename="univers")
 router.register(r'characters', CharacterViewSet, basename="character")
 router.register(r'favorites', FavoriteViewSet, basename="favorite")
 router.register(r'articles', ArticleViewSet, basename="article")

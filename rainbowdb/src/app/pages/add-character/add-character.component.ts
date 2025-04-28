@@ -1,44 +1,62 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup, Validators, FormArray } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  Validators,
+  FormArray,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { MoviesService } from 'src/app/services/movies.service';
-import { UniversService } from 'src/app/services/univers.service';
-import { Character } from './models/character';
-import { Color } from 'src/models/color';
-import { Picture } from 'src/models/picture';
-import { Univer } from 'src/models/univer';
 import { CharacterService } from '../../shared/services/character.service';
 import { PicturesService } from '../../shared/services/pictures.service';
 import { ColorService } from '../../shared/services/color.service';
+import { Color } from '../../models/color';
+import { Univer } from '../../models/univer';
+import { UniversService } from '../../shared/services/univers.service';
+import { MoviesService } from '../../shared/services/movies.service';
+import { Movie } from '../../models/movie';
+import { Character } from '../../models/character';
+import { Picture } from '../../models/picture';
+import { CreateCharacter } from '../../models/createCharacter';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-add-character',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
   template: `
     <div class="add-character-container">
       <form [formGroup]="addCharacterForm" (ngSubmit)="onSubmit()">
         <label for="name">Nom du personnage:</label>
         <input type="text" id="name" formControlName="name" />
 
-        <label for="movie">Film:</label>
-        <select id="movie" formControlName="movie">
-          <option *ngFor="let movie of moviesAvailable" [value]="movie.id">
-            {{ movie.name }}
-          </option>
-        </select>
+        <label for="movie">Film :</label>
+        <input
+          formControlName="movie"
+          type="text"
+          id="movie"
+          placeholder="film"
+          class="form-control"
+          required
+        />
 
         <label for="univers">Univers:</label>
         <select id="univers" formControlName="univers" multiple>
-          <option *ngFor="let univers of universAvailable" [value]="univers.id">
+          @for (univers of universAvailable; track univers.id) {
+          <option [value]="univers.id">
             {{ univers.name }}
           </option>
+          }
         </select>
 
         <label for="colors">Couleurs:</label>
         <select id="colors" formControlName="colors" multiple>
-          <option *ngFor="let color of colorsAvailable" [value]="color.id">
+          @for (color of colorsAvailable; track color.id) {
+          <option [value]="color.id">
             {{ color.name }}
           </option>
+          }
         </select>
 
         <label for="picture">Image:</label>
@@ -94,16 +112,17 @@ export class AjouterCharacterComponent {
   myFile!: File;
   id_file!: number;
   id_Movie!: number;
-  moviesAvailable: any[] = [];
+  character!: Character[];
+  moviesAvailable: Movie[] = [];
   colorsAvailable: Color[] = [];
   universAvailable: Univer[] = [];
 
   addCharacterForm: FormGroup = new FormGroup({
     name: new FormControl('', Validators.required),
     movie: new FormControl('', Validators.required),
-    univers: new FormArray([], Validators.required),
-    colors: new FormArray([], Validators.required),
-    picture: new FormControl(''),
+    univers: new FormControl([]),
+    colors: new FormControl([]),
+    id_pictures: new FormControl(''),
   });
 
   constructor(
@@ -116,12 +135,9 @@ export class AjouterCharacterComponent {
   ) {}
 
   ngOnInit(): void {
-    this.moviesService.getMovies().subscribe({
-      next: (movies) => {
-        this.moviesAvailable = movies;
-      },
-      error: (err) => {
-        console.error('Erreur de chargement des films', err);
+    this.characterService.getCharacters().subscribe({
+      next: (response: Character[]) => {
+        this.character = [...response];
       },
     });
 
@@ -139,54 +155,49 @@ export class AjouterCharacterComponent {
       name: this.addCharacterForm.get('movie')?.value,
     };
 
+    console.log("Payload envoyé à l'API :", movie);
+
     this.moviesService.createMovies(movie).subscribe({
       next: (response) => {
         this.id_Movie = response.id!;
         this.createCharacter();
       },
       error: (err) => {
-        console.error('Erreur création du film', err);
+        console.error('Erreur Backend:', err.error);
       },
     });
   }
 
-  createCharacter() {
-    const universIds = this.addCharacterForm.get('univers')?.value;
-    const universTransformed = universIds.map((id: number) => ({ id }));
-
-    const colorIds = this.addCharacterForm.get('colors')?.value;
-    const colorsTransformed = colorIds
-      .filter((id: number) => typeof id === 'number')
-      .map((id: number) => ({ id }));
-
-    const newCharacter = {
-      name: this.addCharacterForm.get('name')?.value,
-      movie: { id: this.id_Movie },
-      universes: universTransformed,
-      colors: colorsTransformed,
-      picture: { id: this.id_file },
-    };
-
-    this.characterService.createCharacter(newCharacter).subscribe({
-      next: (response: Character) => {
-        this.router.navigate(['/arc-en-ciel']);
-      },
-      error: (err) => {
-        console.error('Erreur création du personnage', err);
-      },
-    });
-  }
-
+  
   onFileChange(e: any) {
+    console.log('onFileChange called'); // Vérifiez si la méthode est appelée
     this.myFile = e.target.files[0];
-
+    
     if (this.myFile) {
+      console.log('File selected:', this.myFile); // Vérifiez si le fichier est sélectionné
       const formData = new FormData();
-      formData.append('image', this.myFile);
-
-      this.pictureService.uploadPicture(formData).subscribe({
+      formData.append('file', this.myFile);
+      
+      // Extract the name without extension
+      const fileName = this.myFile.name;
+      const nameWithoutExtension = fileName.split('.').slice(0, -1).join('.');
+      
+      formData.append('name', nameWithoutExtension);
+      formData.append('size', this.myFile.size.toString());
+      formData.append('description', `Description for ${nameWithoutExtension}`);
+      formData.append('mimetype', this.myFile.type);
+      
+      // Log the FormData content
+      console.log('FormData content:');
+      for (let pair of formData.entries()) {
+        console.log(pair[0] + ', ' + pair[1]);
+      }
+      
+      this.pictureService.postPicture(formData).subscribe({
         next: (photo: Partial<Picture>) => {
+          console.log('Image uploaded successfully:', photo);
           this.id_file = photo.id!;
+          console.log("ID de l'image récupéré:", this.id_file);
         },
         error: (err) => {
           console.error("Erreur de téléchargement de l'image", err);
@@ -194,7 +205,33 @@ export class AjouterCharacterComponent {
       });
     }
   }
+  
+  createCharacter() {
+    const universOriginal = this.addCharacterForm.get('univers')?.value;
+    const universTransformé = universOriginal.map((id: number) => ({ id }));
 
+    const colorsOriginal = this.addCharacterForm.get('colors')?.value;
+    const colorsTransformé = colorsOriginal
+      .filter((id: number) => typeof id === 'number')
+      .map((id: number) => ({ id }));
+
+    const newCharacter: CreateCharacter = {
+      name: this.addCharacterForm.get('name')?.value,
+      to_in: [{ id: this.id_Movie }],
+      belong: universTransformé,
+      to_own: colorsTransformé,
+      picture: this.id_file,
+    };
+
+    console.log("Payload envoyé à l'API :", this.addCharacterForm.value);
+
+
+    this.characterService
+      .createCharacter(newCharacter)
+      .subscribe((response: Character) => {
+        this.router.navigate(['/arc-en-ciel']);
+      });
+  }
   get universControls() {
     return (this.addCharacterForm.get('univers') as FormArray).controls;
   }
@@ -203,9 +240,9 @@ export class AjouterCharacterComponent {
     return (this.addCharacterForm.get('colors') as FormArray).controls;
   }
 
-  addUnivers(universeId: number) {
+  addUnivers(universId: number) {
     const univers = this.addCharacterForm.get('univers') as FormArray;
-    univers.push(new FormControl(universeId));
+    univers.push(new FormControl(universId));
   }
 
   addColor(colorId: number) {

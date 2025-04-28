@@ -1,6 +1,6 @@
 # admin.py
 from django.contrib import admin
-from .models import Article, Character, Color, Movie, Universe, Picture
+from .models import Article, Character, Color, Movie, Univers, Picture
 
 
 @admin.register(Article)
@@ -11,9 +11,9 @@ class ArticleAdmin(admin.ModelAdmin):
     
 admin.site.register(Character)
 class CharacterAdmin(admin.ModelAdmin):
-    list_display = ['name', 'picture', 'colors', 'movies', 'universes']
+    list_display = ['name', 'picture', 'colors', 'movies', 'univers']
     search_fields = ['name']
-    list_filter = ['colors', 'movies', 'universes']
+    list_filter = ['colors', 'movies', 'univers']
     
 admin.site.register(Color)
 class ColorAdmin(admin.ModelAdmin):
@@ -25,8 +25,8 @@ class MovieAdmin(admin.ModelAdmin):
     list_display = ['name']
     search_fields = ['name']
     
-admin.site.register(Universe)
-class UniverseAdmin(admin.ModelAdmin):
+admin.site.register(Univers)
+class UniversAdmin(admin.ModelAdmin):
     list_display = ['name']
     search_fields = ['name']
     

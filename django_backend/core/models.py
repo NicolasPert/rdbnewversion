@@ -1,5 +1,4 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 
 # ==============================
@@ -11,23 +10,24 @@ class Picture(models.Model):
     description = models.CharField(max_length=255)
     mimetype = models.CharField(max_length=255)
     
+    
     def __str__(self):
         return self.name
 
 class Color(models.Model):
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255)
     
     def __str__(self):
         return self.name
 
 class Movie(models.Model):
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255)
     
     def __str__(self):
         return self.name
 
-class Universe(models.Model):
-    name = models.CharField(max_length=255, unique=True)
+class Univers(models.Model):
+    name = models.CharField(max_length=255)
     
     def __str__(self):
         return self.name
@@ -35,12 +35,35 @@ class Universe(models.Model):
 class Character(models.Model):
     name = models.CharField(max_length=255)
     picture = models.OneToOneField(Picture, on_delete=models.CASCADE, related_name="character")
-    colors = models.ManyToManyField(Color, related_name="characters")
-    movies = models.ManyToManyField(Movie, related_name="characters")
-    universes = models.ManyToManyField(Universe, related_name="characters")
     
     def __str__(self):
-        return self.name, self.picture.name, self.colors.all(), self.movies.all(), self.universes.all()
+        return f"{self.name} (Picture: {self.picture.name})"
+    
+    
+class Belong(models.Model):
+    character = models.ForeignKey(Character, on_delete=models.CASCADE, related_name="belongs")
+    univers = models.ForeignKey(Univers, on_delete=models.CASCADE)
+
+
+    def __str__(self):
+        return f"{self.character.name} - {self.univers.name}"
+    
+class ToOwn(models.Model):
+    character = models.ForeignKey(Character, on_delete=models.CASCADE, related_name="to_own")
+    color = models.ForeignKey(Color, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.character.name} - {self.color.name}"
+
+class ToIn(models.Model):
+    character = models.ForeignKey(Character, on_delete=models.CASCADE, related_name="to_in")
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
+
+
+    def __str__(self):
+        return f"{self.character.name} - {self.movie.name}"
+
+
 
 class Favorite(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="favorites")

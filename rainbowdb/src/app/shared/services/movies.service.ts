@@ -11,16 +11,20 @@ export class MoviesService {
   constructor(private http: HttpClient) {}
 
   setHeaders() {
-    const jwtToken = sessionStorage.getItem('token');
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${jwtToken}`,
-    });
-    return headers;
+    const jwtToken = localStorage.getItem('auth_token');
+      if (!jwtToken) {
+        throw new Error('JWT token manquant dans le localStorage');
+      }
+
+      return new HttpHeaders({
+        Authorization: `Bearer ${jwtToken}`,
+      });
   }
 
   createMovies(movies: CreateMovies): Observable<Movie> {
     const headers = this.setHeaders();
-    return this.http.post<Movie>(`http://localhost:8000/api/movies`, movies, {
+    console.log('Token envoyé:', this.setHeaders().get('Authorization'));
+    return this.http.post<Movie>(`http://localhost:8000/api/movies/`, movies, {
       headers,
     });
   }
@@ -34,8 +38,8 @@ export class MoviesService {
     );
   }
 
-  getMovie(): Observable<Movie> {
-    return this.http.get<Movie>(`http://localhost:8000/api/movies`);
+  getMovie(): Observable<Movie[]> {
+    return this.http.get<Movie[]>(`http://localhost:8000/api/movies/`);
   }
 
   getMovieIdByName(movieName: string): Observable<number> {

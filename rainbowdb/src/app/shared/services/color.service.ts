@@ -10,7 +10,7 @@ export class ColorService {
   constructor(private http: HttpClient) {}
 
   setHeaders() {
-    const jwtToken = sessionStorage.getItem('token');
+    const jwtToken = localStorage.getItem('auth_token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${jwtToken}`,
     });

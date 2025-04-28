@@ -23,7 +23,7 @@ export class PicturesService {
   }
 
   postPicture(formData: FormData) {
-    return this.http.post(`http://localhost:8000/api/pictures/`, formData);
+    return this.http.post<Picture>(`http://localhost:8000/api/pictures/`, formData);
   }
 
   deletePicture(id: number) {

@@ -8,5 +8,5 @@ export interface CreateCharacter {
   to_in: [{ id: number }];
   belong: [{ id: number }];
   to_own: [{ id: number }];
-  picture: { id: number };
+  picture:  number ;
 }

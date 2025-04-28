@@ -39,7 +39,7 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='Universe',
+            name='Univers',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=255, unique=True)),
@@ -66,7 +66,7 @@ class Migration(migrations.Migration):
                 ('colors', models.ManyToManyField(related_name='characters', to='core.color')),
                 ('movies', models.ManyToManyField(related_name='characters', to='core.movie')),
                 ('picture', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='character', to='core.picture')),
-                ('universes', models.ManyToManyField(related_name='characters', to='core.universe')),
+                ('univers', models.ManyToManyField(related_name='characters', to='core.univers')),
             ],
         ),
         migrations.CreateModel(
