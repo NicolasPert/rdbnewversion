@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterOutlet, RouterModule } from '@angular/router';
+import { RouterOutlet, RouterModule, RouterLink } from '@angular/router';
 import { HeaderComponent } from './shared/header/header.component';
 import { FooterComponent } from './shared/footer/footer.component';
 import { ChatWidgetComponent } from './shared/chat/chat-widget/chat-widget.component';
@@ -17,6 +17,7 @@ import { WeatherComponent } from './shared/weather/weather.component';
     FooterComponent,
     ChatWidgetComponent,
     WeatherComponent,
+    RouterLink
   ],
   template: `
     <app-header></app-header>
@@ -26,6 +27,15 @@ import { WeatherComponent } from './shared/weather/weather.component';
       <aside
         class="w-64 h-screen sticky top-0 bg-gradient-to-b from-blue-300 via-pink-300 to-purple-300 p-4 text-white shadow-lg shadow-purple-500/30"
       >
+        <div class="relative">
+          <a
+            [routerLink]="['/add-character']"
+            class="absolute [bottom:-4rem] [right-0rem] bg-green-500 text-white w-12 h-12 flex items-center justify-center rounded-full text-xl shadow-lg hover:bg-green-600 transition"
+            title="Ajouter un personnage"
+          >
+            A
+          </a>
+        </div>
         <app-weather class="text-black"></app-weather>
       </aside>
 
@@ -48,7 +58,6 @@ import { WeatherComponent } from './shared/weather/weather.component';
   `,
   styles: [``],
 })
-
 export class AppComponent {
   isConnected = false;
 

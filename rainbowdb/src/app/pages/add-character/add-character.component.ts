@@ -60,7 +60,7 @@ import { CommonModule } from '@angular/common';
         </select>
 
         <label for="picture">Image:</label>
-        <input type="file" (change)="onFileChange($event)" />
+        <input type="file" (change)="onChange($event)" />
 
         <button type="submit" [disabled]="addCharacterForm.invalid">
           Ajouter le personnage
@@ -168,63 +168,40 @@ export class AjouterCharacterComponent {
     });
   }
 
-  
-  onFileChange(e: any) {
-    console.log('onFileChange called'); // Vérifiez si la méthode est appelée
+  onChange(e: any) {
     this.myFile = e.target.files[0];
-    
+
     if (this.myFile) {
-      console.log('File selected:', this.myFile); // Vérifiez si le fichier est sélectionné
       const formData = new FormData();
       formData.append('file', this.myFile);
-      
-      // Extract the name without extension
-      const fileName = this.myFile.name;
-      const nameWithoutExtension = fileName.split('.').slice(0, -1).join('.');
-      
-      formData.append('name', nameWithoutExtension);
-      formData.append('size', this.myFile.size.toString());
-      formData.append('description', `Description for ${nameWithoutExtension}`);
-      formData.append('mimetype', this.myFile.type);
-      
-      // Log the FormData content
-      console.log('FormData content:');
-      for (let pair of formData.entries()) {
-        console.log(pair[0] + ', ' + pair[1]);
-      }
-      
+
       this.pictureService.postPicture(formData).subscribe({
         next: (photo: Partial<Picture>) => {
-          console.log('Image uploaded successfully:', photo);
-          this.id_file = photo.id!;
-          console.log("ID de l'image récupéré:", this.id_file);
+          const pictureId = photo.id!;
+          this.addCharacterForm.get('id_pictures')?.setValue(pictureId);
+          console.log('Image uploadée, ID :', pictureId);
         },
         error: (err) => {
-          console.error("Erreur de téléchargement de l'image", err);
+          console.error('Erreur upload image :', err);
         },
       });
     }
   }
-  
-  createCharacter() {
-    const universOriginal = this.addCharacterForm.get('univers')?.value;
-    const universTransformé = universOriginal.map((id: number) => ({ id }));
 
-    const colorsOriginal = this.addCharacterForm.get('colors')?.value;
-    const colorsTransformé = colorsOriginal
-      .filter((id: number) => typeof id === 'number')
-      .map((id: number) => ({ id }));
+  createCharacter() {
+    const universIds = this.addCharacterForm.get('univers')?.value;
+    const colorIds = this.addCharacterForm.get('colors')?.value;
+    const pictureId = this.addCharacterForm.get('id_pictures')?.value;
 
     const newCharacter: CreateCharacter = {
       name: this.addCharacterForm.get('name')?.value,
-      to_in: [{ id: this.id_Movie }],
-      belong: universTransformé,
-      to_own: colorsTransformé,
-      picture: this.id_file,
+      movies: [ this.id_Movie ],
+      univers: universIds,
+      colors: colorIds,
+      picture: pictureId,
     };
 
-    console.log("Payload envoyé à l'API :", this.addCharacterForm.value);
-
+    console.log("Payload envoyé à l'API :", newCharacter);
 
     this.characterService
       .createCharacter(newCharacter)
@@ -232,6 +209,7 @@ export class AjouterCharacterComponent {
         this.router.navigate(['/arc-en-ciel']);
       });
   }
+
   get universControls() {
     return (this.addCharacterForm.get('univers') as FormArray).controls;
   }

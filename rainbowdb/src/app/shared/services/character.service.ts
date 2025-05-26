@@ -19,7 +19,10 @@ export class CharacterService {
   }
 
   getCharacters(): Observable<Character[]> {
-    return this.http.get<Character[]>(`http://localhost:8000/api/characters/`);
+    const headers = this.setHeaders();
+    return this.http.get<Character[]>(`http://localhost:8000/api/characters/`, {
+      headers,
+    });
   }
 
   createCharacter(character: CreateCharacter): Observable<Character> {

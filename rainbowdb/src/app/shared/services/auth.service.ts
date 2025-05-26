@@ -34,7 +34,7 @@ export class AuthService {
         tap((res) => {
           localStorage.setItem('auth_token', res.access);
           localStorage.setItem('refresh_token', res.refresh);
-          localStorage.setItem('username', res.user.username); // ✅ user.username de la réponse
+          localStorage.setItem('username', res.user.username);
           localStorage.setItem('user_id', res.user.id.toString());
           localStorage.setItem('email', res.user.email);
           this.isLoggedInSignal.set(true);
